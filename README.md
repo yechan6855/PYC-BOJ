@@ -3,4 +3,4 @@ This is a auto push repository for Baekjoon Online Judge created with [BaekjoonH
 
 1Day 1Commit
 
-// 하루에 백준 한 문제 풀기
+하루에 백준 한 문제 풀기
