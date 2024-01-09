@@ -2,8 +2,6 @@
 #include <queue>
 #include <map>
 
-#define EL "\n"
-
 using namespace std;
 
 int main() {
@@ -67,9 +65,9 @@ int main() {
                 break;
         }
         if (MQ.empty())
-            cout << "EMPTY" << EL;
+            cout << "EMPTY" << "\n";
         else
-            cout << MQ.top() << " " << mQ.top() << EL;
+            cout << MQ.top() << " " << mQ.top() << "\n";
     }
     return 0;
 }
