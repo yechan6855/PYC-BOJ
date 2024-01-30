@@ -1,6 +1,7 @@
-# Baekyechan
-This is a auto push repository for Baekjoon Online Judge created with [BaekjoonHub](https://github.com/BaekjoonHub/BaekjoonHub).
+PS 공부 및 코딩 테스트 준비 for C++
 
-1Day 1Commit
+SWEA
 
-하루에 백준 한 문제 풀기
+Baekjoon Online Judge
+
+Programmers
