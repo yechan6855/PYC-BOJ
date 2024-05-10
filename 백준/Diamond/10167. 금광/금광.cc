@@ -2,6 +2,34 @@
 #define int long long
 #define endl "\n"
 using namespace std;
+const int INF = 1e9 * 3001LL;
+
+struct SegmentTree {
+    vector<array<int, 4>> tree;
+    int CAP;
+
+    SegmentTree(int cap) {
+        CAP = 1 << static_cast<int>(log2(cap) + 1);
+        tree.resize(CAP << 1, {-INF, -INF, -INF, 0});
+    }
+
+    void update(int idx, int value) {
+        int i = CAP + idx;
+        int new_val = tree[i][3] + value;
+        tree[i] = {new_val, new_val, new_val, new_val};
+
+        for (i >>= 1; i > 0; i >>= 1) {
+            auto &A = tree[i << 1], &B = tree[(i << 1) | 1];
+            tree[i] = {
+                    max(A[0], A[3] + B[0]),
+                    max(B[1], B[3] + A[1]),
+                    max({A[2], B[2], A[1] + B[0]}),
+                    A[3] + B[3]
+            };
+        }
+    }
+};
+
 int32_t main() {
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
@@ -10,51 +38,54 @@ int32_t main() {
     int N;
     cin >> N;
 
-    vector<tuple<int, int, int>> mines(N);
-    vector<int> xs, ys;
+    vector<tuple<int, int, int>> points(N);
+    set<int> x_set, y_set;
 
-    for (int i = 0; i < N; i++) {
+    for (int i = 0; i < N; ++i) {
         int x, y, w;
         cin >> x >> y >> w;
-        mines[i] = make_tuple(x, y, w);
-        xs.push_back(x);
-        ys.push_back(y);
+        points[i] = {x, y, w};
+        x_set.insert(x);
+        y_set.insert(y);
     }
 
-    sort(xs.begin(), xs.end());
-    sort(ys.begin(), ys.end());
-    xs.erase(unique(xs.begin(), xs.end()), xs.end());
-    ys.erase(unique(ys.begin(), ys.end()), ys.end());
+    map<int, int> x_map, y_map;
+    int idx = 0;
+    for (int x : x_set) x_map[x] = idx++;
+    idx = 0;
+    for (int y : y_set) y_map[y] = idx++;
 
-    map<int, int> x_compress, y_compress;
-    for (int i = 0; i < xs.size(); i++) x_compress[xs[i]] = i;
-    for (int i = 0; i < ys.size(); i++) y_compress[ys[i]] = i;
+    int X = x_map.size(), Y = y_map.size();
+    vector<vector<pair<int, int>>> y_data(Y), x_data(X);
 
-    vector<vector<int>> grid(xs.size(), vector<int>(ys.size(), 0));
-    for (auto &[x, y, w] : mines) {
-        int cx = x_compress[x];
-        int cy = y_compress[y];
-        grid[cx][cy] += w;
+    for (auto &[x, y, w] : points) {
+        y_data[y_map[y]].emplace_back(x_map[x], w);
+        x_data[x_map[x]].emplace_back(y_map[y], w);
     }
 
-    int max_profit = 0;
-    
-    for (int left = 0; left < xs.size(); ++left) {
-        vector<int> profits(ys.size(), 0);
-        for (int right = left; right < xs.size(); ++right) {
-            for (int k = 0; k < ys.size(); ++k) {
-                profits[k] += grid[right][k];
+    int ans = 0;
+    if (Y <= X) {
+        for (int sy = 0; sy < Y; ++sy) {
+            SegmentTree st(X);
+            for (int ey = sy; ey < Y; ++ey) {
+                for (auto &[x, w] : y_data[ey]) {
+                    st.update(x, w);
+                }
+                ans = max(ans, st.tree[1][2]);
             }
-
-            int local_max = 0, current_sum = 0;
-            for (int profit : profits) {
-                current_sum = max(current_sum + profit, profit);
-                local_max = max(local_max, current_sum);
+        }
+    } else {
+        for (int sx = 0; sx < X; ++sx) {
+            SegmentTree st(Y);
+            for (int ex = sx; ex < X; ++ex) {
+                for (auto &[y, w] : x_data[ex]) {
+                    st.update(y, w);
+                }
+                ans = max(ans, st.tree[1][2]);
             }
-            max_profit = max(max_profit, local_max);
         }
     }
 
-    cout << max_profit << endl;
+    cout << ans << endl;
     return 0;
 }
