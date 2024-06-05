@@ -1,78 +1,80 @@
-#include <iostream>
-#include <cmath>
-#include <algorithm>
-#include <vector>
+#include <bits/stdc++.h>
+#define int long long
+#define fi first
+#define se second
+#define pb push_back
+#define pi pair<int,int>
+#define mi map<int,int>
+#define vi vector<int>
+#define vvi vector<vector<int>>
+#define endl "\n"
+#define io ios_base::sync_with_stdio(false); cin.tie(nullptr);
 using namespace std;
 
-int main() {
-	int N;
-	double element;
-	vector <double> v;
-	double mean = 0;
-	double median = 0;
-	double mode = 0;
-	double range = 0;
+void build(vi& segTree, const vi& arr, int node, int start, int end) {
+    if (start == end) {
+        segTree[node] = arr[start];
+    } else {
+        int mid = (start + end) / 2;
+        build(segTree, arr, 2 * node + 1, start, mid);
+        build(segTree, arr, 2 * node + 2, mid + 1, end);
+        segTree[node] = segTree[2 * node + 1] + segTree[2 * node + 2];
+    }
+}
 
-	cin >> N;
-	for(int i = 0; i < N; i++) {
-		cin >> element;
-		v.push_back(element);
-	}
-	for (int i = 0; i < N; i++) {
-		mean += v[i];
-	}
-	mean = round(mean / N);
-	// -0 출력 방지
-	if (mean == -0) {
-		mean = 0;
-	}
-	sort(v.begin(), v.end());
-	if (N == 1) {
-		median = v[0];
-	}
-	else {
-		median = v[(N - 1) / 2];
-	}
-	int count[8001] = { 0, };
-	for (int i = 0; i < N; i++) {
-		if (v[i] >= 0) {
-			count[int(v[i])]++;
-		}
-		else {
-			count[int(fabs(v[i])) + 4000]++;
-		}
-	}
-	int max = count[0];
-	int index = 0;
-	for (int i = 0; i < 8001; i++) {
-		if (max < count[i]) {
-			index = i;
-			max = count[i];
-		}
-	}
-	vector <double> mv;
-	for (int i = 0; i < 8001; i++) {
-		if (max == count[i]) {
-			if (i <= 4000) {
-				mv.push_back(i);
-			}
-			else {
-				mv.push_back((i - 4000) * (-1));
-			}
-		}
-	}
-	sort(mv.begin(), mv.end());
-	if (mv.size() == 1) {
-		mode = mv[0];
-	}
-	else {
-		mode = mv[1];
-	}
-	range = v[N - 1] - v[0];
-	cout << mean << "\n";
-	cout << median << "\n";
-	cout << mode << "\n";
-	cout << range << "\n";
+int querySum(vi& segTree, int node, int start, int end, int L, int R) {
+    if (R < start || end < L) {
+        return 0;
+    }
+    if (L <= start && end <= R) {
+        return segTree[node];
+    }
+    int mid = (start + end) / 2;
+    int l = querySum(segTree, 2 * node + 1, start, mid, L, R);
+    int r = querySum(segTree, 2 * node + 2, mid + 1, end, L, R);
+    return l + r;
+}
 
-	return 0;
+int32_t main() {
+    io;
+    int N;
+    cin >> N;
+    vi arr(N);
+    mi frequency;
+    int sum = 0;
+
+    for (int i = 0; i < N; ++i) {
+        cin >> arr[i];
+        sum += arr[i];
+        frequency[arr[i]]++;
+    }
+
+    double mean = round((double)sum / N);
+    if (mean == -0) {
+        mean = 0;
+    }
+    cout << mean << endl;
+
+    sort(arr.begin(), arr.end());
+    int median = arr[N / 2];
+    cout << median << endl;
+
+    int mode = arr[0];
+    int maxFreq = 0;
+    bool second = false;
+    for (auto& [num, freq] : frequency) {
+        if (freq > maxFreq) {
+            maxFreq = freq;
+            mode = num;
+            second = false;
+        } else if (freq == maxFreq && !second) {
+            mode = num;
+            second = true;
+        }
+    }
+    cout << mode << endl;
+
+    int range = arr.back() - arr.front();
+    cout << range << endl;
+    return 0;
 }
