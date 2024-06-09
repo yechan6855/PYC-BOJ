@@ -1,41 +1,63 @@
 #include <bits/stdc++.h>
-#define int long long
+#define ll long long
 #define fi first
 #define se second
+#define pb push_back
+#define pob pop_back
+#define pf push_front
+#define pof pop_front
+#define pi pair<int, int>
+#define mi map<int, int>
+#define qi queue<int>
+#define di deque<int>
+#define vi vector<int>
+#define vvi vector<vector<int>>
 #define endl "\n"
+#define io ios_base::sync_with_stdio(false); cin.tie(nullptr); cout.tie(nullptr)
 using namespace std;
-int32_t main() {
-    int t;
-    cin>>t;
-    while(t--){
-        int n,m;
-        cin>>n>>m;
-        queue<pair<int,int>>q;
-        priority_queue<int>pq;
 
-        for(int i=0; i<n; ++i){
-            int priority;
-            cin>>priority;
-            q.push({priority,i});
-            pq.push(priority);
+int main() {
+    int T;
+    cin >> T;
+
+    while (T--) {
+        int N, M;
+        cin >> N >> M;
+
+        vector<int> a(N);
+        queue<int> b;
+
+        for (int i = 0; i < N; ++i) {
+            cin >> a[i];
+            b.push(i);
         }
 
-        int cnt=0;
-        while(!q.empty()){
-            int cur_priority=q.front().fi;
-            int cur_index=q.front().se;
-            q.pop();
+        int printOrder = 0;
 
-            if(cur_priority==pq.top()){
-                pq.pop();
-                cnt++;
-                if(cur_index==m) {
-                    cout << cnt << endl;
+        while (!b.empty()) {
+            int idx = b.front();
+            b.pop();
+
+            bool isHighest = true;
+            for (int i = 0; i < N; ++i) {
+                if (a[i] > a[idx]) {
+                    isHighest = false;
                     break;
                 }
-            }else{
-                q.push({cur_priority,cur_index});
+            }
+
+            if (isHighest) {
+                ++printOrder;
+                a[idx] = 0;
+                if (idx == M) {
+                    cout << printOrder << endl;
+                    break;
+                }
+            } else {
+                b.push(idx);
             }
         }
     }
+
+    return 0;
 }
