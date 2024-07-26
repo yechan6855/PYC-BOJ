@@ -8,13 +8,27 @@ int main() {
     io;
     ll n;
     cin >> n;
-    
-    ll k = static_cast<ll>(sqrt(n));
-    
-    if (k * k < n) {
-        k++;
+
+    if (n == 0) {
+        cout << 0 << endl;
+        return 0;
     }
-    
-    cout << k << endl;
+
+    double x = n;
+    double prev = 0;
+
+    while (abs(x - prev) >= 1) {
+        prev = x;
+        x = (x + n / x) / 2.0;
+    }
+
+    ll result = static_cast<ll>(x);
+
+    if (result * result < n) {
+        result++;
+    }
+
+    cout << result << endl;
+
     return 0;
 }
