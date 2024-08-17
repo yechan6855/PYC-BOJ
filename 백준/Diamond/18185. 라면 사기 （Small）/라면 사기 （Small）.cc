@@ -1,7 +1,9 @@
 #include <bits/stdc++.h>
+#define int long long
+#define endl "\n"
 using namespace std;
 
-int main() {
+int32_t main() {
     int N;
     cin >> N;
     vector<int> A(N);
@@ -9,7 +11,7 @@ int main() {
         cin >> A[i];
     }
 
-    long long cost = 0;
+    int cost = 0;
     for (int i = 0; i < N; i++) {
         if (i+2 < N) {
             int diff = A[i+1] - A[i+2];
